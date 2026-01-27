@@ -1,4 +1,4 @@
-import { login } from "../services/authService";
+import { login } from "../services/authService.js";
 
 export async function handleLogin() {
   const email = document.getElementById("email").value;
