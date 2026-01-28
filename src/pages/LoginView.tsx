@@ -1,34 +1,29 @@
 import { useState } from "react";
 import { login } from "../services/authService";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import React from "react";
 
 export default function LoginView() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setIsSubmitting(true);
 
     try {
       await login(email, password);
-      navigate("/", { replace: true });
+      console.log("Login successful");
+      navigate("/"); // skickar vidare till App.tsx default-route
     } catch (err) {
       setError("Fel email eller lösenord");
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <h2>Logga in</h2>
-
       <div>
         <label htmlFor="email">Email</label>
         <input
@@ -37,7 +32,6 @@ export default function LoginView() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          autoComplete="email"
         />
       </div>
 
@@ -49,18 +43,16 @@ export default function LoginView() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          autoComplete="current-password"
         />
       </div>
 
-      <button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Loggar in..." : "Logga in"}
-      </button>
+      <button type="submit">Logga in</button>
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 
-      <p>
-        Inget konto än? <Link to="/register">Skapa ett</Link>
+      {/* NYTT */}
+      <p style={{ marginTop: 12 }}>
+        <Link to="/forgot-password">Glömt lösenord?</Link>
       </p>
     </form>
   );
