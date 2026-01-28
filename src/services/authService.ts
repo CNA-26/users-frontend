@@ -1,6 +1,6 @@
 import { USERS_API_URL } from "../config/api";
 
-export async function login(email, password) {
+export async function login(email: string, password: string): Promise<string> {
   const response = await fetch(`${USERS_API_URL}/login`, {
     method: "POST",
     headers: {
@@ -13,7 +13,7 @@ export async function login(email, password) {
     throw new Error("Login failed");
   }
 
-  const data = await response.json();
+  const data: { token: string } = await response.json();
 
   localStorage.setItem("jwt", data.token);
 

@@ -1,1 +1,0 @@
-export const USERS_API_URL = "https://users-api.example.com";
