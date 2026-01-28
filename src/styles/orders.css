@@ -1,0 +1,115 @@
+.orders-page {
+  max-width: 960px;          /* slightly wider – feels more premium */
+  margin: 0 auto;
+  padding: 40px 24px;        /* balanced breathing room */
+  background: linear-gradient(135deg, #9DC08B 0%, #8AB07A 50%, #609966 100%);  /* richer, less flat green */
+  color: #2F3D2A;            /* slightly darker text for better contrast */
+  min-height: 100vh;         /* full height helps when few orders */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ── Card – softer, glassmorphic-inspired, less white ── */
+.order-card {
+  background: rgba(255, 255, 255, 0.72);   /* semi-transparent white */
+  backdrop-filter: blur(12px) saturate(140%);  /* classic glassmorphism – supported in all modern browsers */
+  -webkit-backdrop-filter: blur(12px) saturate(140%);
+  border-radius: 20px;
+  padding: 28px;
+  margin-bottom: 32px;
+  border: 1px solid rgba(64, 81, 59, 0.18);   /* subtle border instead of thick left one */
+  box-shadow: 
+    0 10px 30px rgba(64, 81, 59, 0.12),
+    inset 0 1px 2px rgba(255, 255, 255, 0.7);
+  transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.order-card:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 
+    0 18px 40px rgba(64, 81, 59, 0.18),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+/* Header – cleaner separation */
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #40513B;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(64, 81, 59, 0.15);  /* softer than full #9DC08B */
+}
+
+/* Status – more prominent */
+.order-status {
+  margin: 16px 0 8px;
+  font-size: 1rem;
+  font-weight: 550;
+  color: #609966;
+  letter-spacing: 0.4px;
+}
+
+.order-status strong {
+  color: #40513B;
+  font-weight: 700;
+}
+
+/* Items – tighter, richer background */
+.order-items {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px dashed rgba(96, 153, 102, 0.4);
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: rgba(237, 241, 214, 0.65);   /* softer #EDF1D6 with transparency */
+  border-radius: 14px;
+  border: 1px solid rgba(64, 81, 59, 0.12);
+  transition: all 0.22s ease;
+}
+
+.order-item:hover {
+  background: rgba(237, 241, 214, 0.85);
+  transform: translateX(6px);
+  box-shadow: 0 6px 18px rgba(64, 81, 59, 0.1);
+}
+
+.order-item img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 2px solid #40513B;   /* nicer accent color */
+  background: linear-gradient(to bottom right, #f8f9f0, #fff);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+/* Total – more impact */
+.order-total {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid #609966;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #2F3D2A;
+  text-align: right;
+  letter-spacing: 0.5px;
+}
+
+/* Error – fits better */
+.error {
+  color: #8C7A64;
+  background: rgba(140, 122, 100, 0.15);
+  padding: 14px 18px;
+  border-radius: 12px;
+  border-left: 5px solid #8C7A64;
+  margin: 16px 0;
+  font-size: 0.98rem;
+}
