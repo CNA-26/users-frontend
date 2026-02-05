@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { fetchOrders } from '../api/orders.ts';
+import { fetchOrders } from '../api/orders';
 import { Order } from '../types/order';
-import OrderCard from '../components/OrderCard.tsx';
+import OrderCard from '../components/OrderCard';
 import '../styles/orders.css';
 
 export default function PreviousOrders() {
