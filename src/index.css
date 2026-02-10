@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Lemon&family=Inter:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply font-sans text-monstera-dark antialiased;
+        background: linear-gradient(135deg, #9DC08B 0%, #8AB07A 50%, #609966 100%);
+        min-height: 100vh;
+    }
+}
