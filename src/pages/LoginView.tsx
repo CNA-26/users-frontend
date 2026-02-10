@@ -1,59 +1,72 @@
 import { useState } from "react";
-import { login } from "../services/authService";
+import { login as apiLogin } from "../api/auth";
 import { useNavigate, Link } from "react-router-dom";
 import React from "react";
+import { useAuth } from "../context/AuthContext";
 
 export default function LoginView() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     try {
-      await login(email, password);
-      console.log("Login successful");
-      navigate("/"); // skickar vidare till App.tsx default-route
+      const token = await apiLogin(email, password);
+      login(token); // Update context
+      navigate("/");
     } catch (err) {
       setError("Fel email eller lösenord");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label htmlFor="email">Email</label>
-        <input
-          id="email"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
-      </div>
+    <div className="max-w-md mx-auto mt-10 bg-white/60 backdrop-blur-lg p-8 rounded-3xl shadow-xl border border-white/40">
+      <h2 className="text-3xl font-branding text-monstera-dark mb-6 text-center">Welcome Back</h2>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label htmlFor="email" className="block text-sm font-bold text-monstera-green mb-1">Email</label>
+          <input
+            id="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="w-full px-4 py-3 rounded-xl bg-white/80 border border-monstera-green/20 focus:outline-none focus:ring-2 focus:ring-monstera-medium transition-all"
+            placeholder="your@email.com"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="password">Lösenord</label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
-      </div>
+        <div>
+          <label htmlFor="password" className="block text-sm font-bold text-monstera-green mb-1">Lösenord</label>
+          <input
+            id="password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="w-full px-4 py-3 rounded-xl bg-white/80 border border-monstera-green/20 focus:outline-none focus:ring-2 focus:ring-monstera-medium transition-all"
+            placeholder="••••••••"
+          />
+        </div>
 
-      <button type="submit">Logga in</button>
+        <button
+          type="submit"
+          className="w-full py-3.5 bg-monstera-green text-white font-bold rounded-xl hover:bg-monstera-dark hover:scale-[1.02] shadow-lg shadow-monstera-green/20 transition-all duration-200"
+        >
+          Logga in
+        </button>
 
-      {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <p className="p-3 bg-red-100/80 text-red-700 rounded-lg text-sm text-center border border-red-200">{error}</p>}
 
-      {/* NYTT */}
-      <p style={{ marginTop: 12 }}>
-        <Link to="/forgot-password">Glömt lösenord?</Link>
-      </p>
-    </form>
+        <p className="text-center text-sm pt-2">
+          <Link to="/forgot-password" className="text-monstera-medium hover:text-monstera-dark font-semibold underline decoration-2 underline-offset-2">Glömt lösenord?</Link>
+        </p>
+      </form>
+    </div>
   );
 }
