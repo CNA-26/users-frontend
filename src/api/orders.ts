@@ -10,15 +10,15 @@ const mockOrders: Order[] = [
     items: [
       {
         productId: '1',
-        name: 'Wireless Headphones',
-        imageUrl: 'https://via.placeholder.com/100?text=Headphones',
+        name: 'Plant',
+        imageUrl: 'https://via.placeholder.com/100?text=Plant',
         quantity: 1,
         price: 79.99
       },
       {
         productId: '2',
-        name: 'USB Cable',
-        imageUrl: 'https://via.placeholder.com/100?text=Cable',
+        name: 'Flower Pot',
+        imageUrl: 'https://via.placeholder.com/100?text=Flower+Pot',
         quantity: 2,
         price: 5.00
       }
@@ -32,22 +32,22 @@ const mockOrders: Order[] = [
     items: [
       {
         productId: '3',
-        name: 'Phone Case',
-        imageUrl: 'https://via.placeholder.com/100?text=Case',
+        name: 'Red flower',
+        imageUrl: 'https://via.placeholder.com/100?text=Red+flower',
         quantity: 1,
         price: 29.99
       },
       {
         productId: '4',
-        name: 'Screen Protector',
-        imageUrl: 'https://via.placeholder.com/100?text=Protector',
+        name: 'Purple flower',
+        imageUrl: 'https://via.placeholder.com/100?text=Purple+flower',
         quantity: 3,
         price: 9.99
       },
       {
         productId: '5',
-        name: 'Charging Cable',
-        imageUrl: 'https://via.placeholder.com/100?text=Charger',
+        name: 'Plant stand',
+        imageUrl: 'https://via.placeholder.com/100?text=Plant+Stand',
         quantity: 2,
         price: 15.00
       }
@@ -61,22 +61,22 @@ const mockOrders: Order[] = [
     items: [
       {
         productId: '6',
-        name: 'Mechanical Keyboard',
-        imageUrl: 'https://via.placeholder.com/100?text=Keyboard',
+        name: 'Palm tree',
+        imageUrl: 'https://via.placeholder.com/100?text=Palm+tree',
         quantity: 1,
         price: 199.99
       },
       {
         productId: '7',
-        name: 'Mouse Pad',
-        imageUrl: 'https://via.placeholder.com/100?text=Mousepad',
+        name: 'Watering can',
+        imageUrl: 'https://via.placeholder.com/100?text=Watering+Can',
         quantity: 1,
         price: 19.99
       },
       {
         productId: '8',
-        name: 'Desk Lamp',
-        imageUrl: 'https://via.placeholder.com/100?text=Lamp',
+        name: 'Big plant pot',
+        imageUrl: 'https://via.placeholder.com/100?text=Big+Plant+Pot',
         quantity: 1,
         price: 80.01
       }
