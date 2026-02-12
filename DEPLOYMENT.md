@@ -24,7 +24,8 @@ This uses Rahti's **nginx-runtime** builder for static React apps - no Docker ne
    - Enter your GitHub repository URL: `https://github.com/CNA-26/users-frontend.git`
 
 4. **Configure Build**
-   - **Builder Image**: Select "nginx" or search for `nginx-runtime`
+   - **Builder Image**: Search for **`nodejs`** and select the one labeled **`Node.js`**.
+   - **Tag**: Select **`20-ubi9`** (matching our local version).
    - **Application Name**: `users-frontend`
    - **Name**: `users-frontend`
    - Click "Show advanced Git options"
