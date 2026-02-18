@@ -141,9 +141,8 @@ export async function refreshAccessToken(): Promise<string> {
  * REQUEST PASSWORD RESET
  * POST /api/auth/users/resetPassword
  */
-/* Bårt kommenterad tillsvidare. 
 
-export async function requestPasswordReset(email: string): Promise<void> {
+/*export async function requestPasswordReset(email: string): Promise<void> {
     const response = await fetch(
         `${USERS_API_URL}/auth/users/resetPassword`,
         {
