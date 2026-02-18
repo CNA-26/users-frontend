@@ -5,7 +5,7 @@ import LoginView from "./pages/LoginView";
 import RegisterView from "./pages/RegisterView";
 import PreviousOrders from "./pages/PreviousOrders";
 import ForgotPasswordView from "./pages/ForgotPasswordView";
-import ResetPasswordView from "./pages/ResetPasswordView";
+import ResetPasswordView from "./pages/ChangePasswordView";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Layout from "./components/Layout";
 

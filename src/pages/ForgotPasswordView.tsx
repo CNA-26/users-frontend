@@ -1,4 +1,4 @@
-/* import React, { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { requestPasswordReset } from "../api/auth";
 
@@ -14,7 +14,6 @@ export default function ForgotPasswordView() {
 
     try {
       await requestPasswordReset(email);
-      // Visa alltid samma “kolla din mail” för att undvika account enumeration
       setStatus("done");
     } catch {
       setError("Något gick fel. Försök igen.");
@@ -34,12 +33,19 @@ export default function ForgotPasswordView() {
             </p>
             <p className="text-sm mt-2">Kolla din inkorg (och spam).</p>
           </div>
-          <Link to="/login" className="inline-block px-6 py-2 bg-monstera-green text-white rounded-xl hover:bg-monstera-dark transition-colors">Tillbaka till login</Link>
+          <Link
+            to="/login"
+            className="inline-block px-6 py-2 bg-monstera-green text-white rounded-xl hover:bg-monstera-dark transition-colors"
+          >
+            Tillbaka till login
+          </Link>
         </div>
       ) : (
         <form onSubmit={onSubmit} className="space-y-5">
           <div>
-            <label htmlFor="email" className="block text-sm font-bold text-monstera-green mb-1">Email</label>
+            <label htmlFor="email" className="block text-sm font-bold text-monstera-green mb-1">
+              Email
+            </label>
             <input
               id="email"
               type="email"
@@ -59,13 +65,20 @@ export default function ForgotPasswordView() {
             {status === "loading" ? "Skickar..." : "Skicka återställningslänk"}
           </button>
 
-          {error && <p className="p-3 bg-red-100/80 text-red-700 rounded-lg text-sm text-center border border-red-200">{error}</p>}
+          {error && (
+            <p className="p-3 bg-red-100/80 text-red-700 rounded-lg text-sm text-center border border-red-200">{error}</p>
+          )}
 
           <p className="text-center text-sm pt-2">
-            <Link to="/login" className="text-monstera-medium hover:text-monstera-dark font-semibold underline decoration-2 underline-offset-2">Tillbaka till login</Link>
+            <Link
+              to="/login"
+              className="text-monstera-medium hover:text-monstera-dark font-semibold underline decoration-2 underline-offset-2"
+            >
+              Tillbaka till login
+            </Link>
           </p>
         </form>
       )}
     </div>
   );
-} */
+}

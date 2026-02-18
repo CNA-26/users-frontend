@@ -1,7 +1,5 @@
 import { USERS_API_URL } from "../config/api";
 
-
-
 export type LoginResponse = {
     accessToken: string;
     refreshToken: string;
@@ -12,7 +10,6 @@ export type CreateUserResponse = {
     email: string;
     createdAt: string;
 };
-
 
 async function parseErrorMessage(response: Response): Promise<string> {
     try {
@@ -32,8 +29,6 @@ async function parseErrorMessage(response: Response): Promise<string> {
 
     return `${response.status} ${response.statusText}`;
 }
-
-
 
 /**
  * LOGIN
@@ -141,19 +136,15 @@ export async function refreshAccessToken(): Promise<string> {
  * REQUEST PASSWORD RESET
  * POST /api/auth/users/resetPassword
  */
-
-/*export async function requestPasswordReset(email: string): Promise<void> {
-    const response = await fetch(
-        `${USERS_API_URL}/auth/users/resetPassword`,
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                accept: "application/json",
-            },
-            body: JSON.stringify({ email }),
-        }
-    );
+export async function requestPasswordReset(email: string): Promise<void> {
+    const response = await fetch(`${USERS_API_URL}/auth/users/resetPassword`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+        },
+        body: JSON.stringify({ email }),
+    });
 
     if (!response.ok) {
         throw new Error(await parseErrorMessage(response));
@@ -161,31 +152,24 @@ export async function refreshAccessToken(): Promise<string> {
 }
 
 /**
- * UPDATE PASSWORD
+ * UPDATE PASSWORD (for logged-in users)
  * PATCH /api/auth/users/updatePassword
- * (Invalidates refresh token)
+ * Invalidates refresh token → user must re-login
  */
 export async function updatePassword(
     userId: string,
     password: string,
     newPassword: string
 ): Promise<void> {
-    const response = await fetch(
-        `${USERS_API_URL}/auth/users/updatePassword`,
-        {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json",
-                accept: "application/json",
-                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            },
-            body: JSON.stringify({
-                userId,
-                password,
-                newPassword,
-            }),
-        }
-    );
+    const response = await fetch(`${USERS_API_URL}/auth/users/updatePassword`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ userId, password, newPassword }),
+    });
 
     if (!response.ok) {
         throw new Error(await parseErrorMessage(response));
