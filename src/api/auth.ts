@@ -1,17 +1,18 @@
 import { USERS_API_URL } from "../config/api";
 
-/* =========================
-   Types
-========================= */
+
 
 export type LoginResponse = {
     accessToken: string;
     refreshToken: string;
 };
 
-/* =========================
-   Helpers
-========================= */
+export type CreateUserResponse = {
+    id: string;
+    email: string;
+    createdAt: string;
+};
+
 
 async function parseErrorMessage(response: Response): Promise<string> {
     try {
@@ -32,9 +33,7 @@ async function parseErrorMessage(response: Response): Promise<string> {
     return `${response.status} ${response.statusText}`;
 }
 
-/* =========================
-   Auth API
-========================= */
+
 
 /**
  * LOGIN
@@ -45,7 +44,7 @@ export async function login(email: string, password: string): Promise<string> {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "accept": "application/json",
+            accept: "application/json",
         },
         body: JSON.stringify({ email, password }),
     });
@@ -65,13 +64,14 @@ export async function login(email: string, password: string): Promise<string> {
 /**
  * REGISTER
  * POST /api/auth/users
+ * (Create user → login)
  */
 export async function register(email: string, password: string): Promise<string> {
     const response = await fetch(`${USERS_API_URL}/auth/users`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "accept": "application/json",
+            accept: "application/json",
         },
         body: JSON.stringify({ email, password }),
     });
@@ -80,7 +80,6 @@ export async function register(email: string, password: string): Promise<string>
         throw new Error(await parseErrorMessage(response));
     }
 
-    // Login immediately after successful user creation
     return await login(email, password);
 }
 
@@ -96,7 +95,7 @@ export async function logout(): Promise<void> {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "accept": "application/json",
+                accept: "application/json",
             },
             body: JSON.stringify({ refreshToken }),
         });
@@ -113,14 +112,14 @@ export async function refreshAccessToken(): Promise<string> {
     const refreshToken = localStorage.getItem("refreshToken");
 
     if (!refreshToken) {
-        throw new Error("No refresh token");
+        throw new Error("No refresh token available");
     }
 
     const response = await fetch(`${USERS_API_URL}/auth/refresh`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "accept": "application/json",
+            accept: "application/json",
         },
         body: JSON.stringify({ refreshToken }),
     });
@@ -136,4 +135,61 @@ export async function refreshAccessToken(): Promise<string> {
     localStorage.setItem("refreshToken", data.refreshToken);
 
     return data.accessToken;
+}
+
+/**
+ * REQUEST PASSWORD RESET
+ * POST /api/auth/users/resetPassword
+ */
+export async function requestPasswordReset(email: string): Promise<void> {
+    const response = await fetch(
+        `${USERS_API_URL}/auth/users/resetPassword`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                accept: "application/json",
+            },
+            body: JSON.stringify({ email }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(await parseErrorMessage(response));
+    }
+}
+
+/**
+ * UPDATE PASSWORD
+ * PATCH /api/auth/users/updatePassword
+ * (Invalidates refresh token)
+ */
+export async function updatePassword(
+    userId: string,
+    password: string,
+    newPassword: string
+): Promise<void> {
+    const response = await fetch(
+        `${USERS_API_URL}/auth/users/updatePassword`,
+        {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json",
+                accept: "application/json",
+                Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            },
+            body: JSON.stringify({
+                userId,
+                password,
+                newPassword,
+            }),
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(await parseErrorMessage(response));
+    }
+
+    // Refresh token is invalidated → force re-login
+    localStorage.clear();
 }
