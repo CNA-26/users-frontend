@@ -1,21 +1,17 @@
-import { USERS_API_URL, USE_MOCK } from "../config/api";
+import { USERS_API_URL } from "../config/api";
 
-/* Types */
+/* =========================
+   Types
+========================= */
 
 export type LoginResponse = {
     accessToken: string;
     refreshToken: string;
 };
 
-export type CreateUserResponse = {
-    id: string;
-    email: string;
-    createdAt: string;
-};
-
-/* Helpers */
-
-const mockDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+/* =========================
+   Helpers
+========================= */
 
 async function parseErrorMessage(response: Response): Promise<string> {
     try {
@@ -36,20 +32,15 @@ async function parseErrorMessage(response: Response): Promise<string> {
     return `${response.status} ${response.statusText}`;
 }
 
-/* Auth API*/
+/* =========================
+   Auth API
+========================= */
 
 /**
  * LOGIN
  * POST /api/auth/login
  */
 export async function login(email: string, password: string): Promise<string> {
-    if (USE_MOCK) {
-        await mockDelay(500);
-        localStorage.setItem("accessToken", "mock-access-token");
-        localStorage.setItem("refreshToken", "mock-refresh-token");
-        return "mock-access-token";
-    }
-
     const response = await fetch(`${USERS_API_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -65,10 +56,6 @@ export async function login(email: string, password: string): Promise<string> {
 
     const data = (await response.json()) as LoginResponse;
 
-    if (!data.accessToken || !data.refreshToken) {
-        throw new Error("Login response missing tokens");
-    }
-
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
 
@@ -76,17 +63,10 @@ export async function login(email: string, password: string): Promise<string> {
 }
 
 /**
- * REGISTER (CREATE USER + LOGIN)
+ * REGISTER
  * POST /api/auth/users
  */
 export async function register(email: string, password: string): Promise<string> {
-    if (USE_MOCK) {
-        await mockDelay(500);
-        localStorage.setItem("accessToken", "mock-access-token");
-        localStorage.setItem("refreshToken", "mock-refresh-token");
-        return "mock-access-token";
-    }
-
     const response = await fetch(`${USERS_API_URL}/auth/users`, {
         method: "POST",
         headers: {
@@ -100,7 +80,7 @@ export async function register(email: string, password: string): Promise<string>
         throw new Error(await parseErrorMessage(response));
     }
 
-    // Backend does NOT return tokens → login immediately
+    // Login immediately after successful user creation
     return await login(email, password);
 }
 
@@ -111,24 +91,16 @@ export async function register(email: string, password: string): Promise<string>
 export async function logout(): Promise<void> {
     const refreshToken = localStorage.getItem("refreshToken");
 
-    if (!refreshToken) {
-        localStorage.clear();
-        return;
+    if (refreshToken) {
+        await fetch(`${USERS_API_URL}/auth/logout`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "accept": "application/json",
+            },
+            body: JSON.stringify({ refreshToken }),
+        });
     }
-
-    if (USE_MOCK) {
-        localStorage.clear();
-        return;
-    }
-
-    await fetch(`${USERS_API_URL}/auth/logout`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "accept": "application/json",
-        },
-        body: JSON.stringify({ refreshToken }),
-    });
 
     localStorage.clear();
 }
@@ -141,7 +113,7 @@ export async function refreshAccessToken(): Promise<string> {
     const refreshToken = localStorage.getItem("refreshToken");
 
     if (!refreshToken) {
-        throw new Error("No refresh token available");
+        throw new Error("No refresh token");
     }
 
     const response = await fetch(`${USERS_API_URL}/auth/refresh`, {
