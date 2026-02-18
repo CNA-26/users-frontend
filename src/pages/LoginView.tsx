@@ -1,10 +1,9 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../api/auth";
-import { useNavigate, Link } from "react-router-dom";
-import React from "react";
 import { useAuth, User } from "../context/AuthContext";
 
-// helper to decode JWT payload
+// Helper to decode JWT payload
 function parseJwt(token: string): any {
   try {
     const base64 = token.split(".")[1];
@@ -30,27 +29,27 @@ export default function LoginView() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-  
+
     try {
-      const accessToken = await apiLogin(email, password); // string
-  
+      const accessToken = await apiLogin(email, password); // string token
+
+      // Decode JWT to extract user info
       const payload = parseJwt(accessToken);
       if (!payload || !payload.sub || !payload.email) {
         throw new Error("Kunde inte läsa användarinfo från token");
       }
-  
+
       const user: User = {
         id: payload.sub,
         email: payload.email,
       };
-  
-      login(accessToken, user); // matches AuthContext
+
+      login(accessToken, user); // ✅ context expects token + user
       navigate("/");
     } catch (err: any) {
       setError("Fel email eller lösenord");
     }
   };
-  
 
   return (
     <div className="max-w-md mx-auto mt-10 bg-white/60 backdrop-blur-lg p-8 rounded-3xl shadow-xl border border-white/40">
