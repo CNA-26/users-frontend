@@ -1,16 +1,27 @@
 import { USERS_API_URL, USE_MOCK } from "../config/api";
 
-export type AuthResponse = {
-    token: string;
+/* Types */
+
+export type LoginResponse = {
+    accessToken: string;
+    refreshToken: string;
 };
 
-// Mock Helper
+export type CreateUserResponse = {
+    id: string;
+    email: string;
+    createdAt: string;
+};
+
+/* Helpers */
+
 const mockDelay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function parseErrorMessage(response: Response): Promise<string> {
     try {
-        const data = (await response.json()) as { message?: string };
+        const data = (await response.json()) as { message?: string; error?: string };
         if (data?.message) return data.message;
+        if (data?.error) return data.error;
     } catch {
         // ignore
     }
@@ -25,24 +36,26 @@ async function parseErrorMessage(response: Response): Promise<string> {
     return `${response.status} ${response.statusText}`;
 }
 
+/* Auth API*/
+
 /**
- * Expected backend:
- * POST {USERS_API_URL}/login
- * body: { email, password }
- * response: { token }
+ * LOGIN
+ * POST /api/auth/login
  */
 export async function login(email: string, password: string): Promise<string> {
     if (USE_MOCK) {
         await mockDelay(500);
-        // Simple mock logic: accept any login
-        const token = "mock-jwt-token-" + Date.now();
-        localStorage.setItem("jwt", token); // Keep this for now, but context will handle it primarily
-        return token;
+        localStorage.setItem("accessToken", "mock-access-token");
+        localStorage.setItem("refreshToken", "mock-refresh-token");
+        return "mock-access-token";
     }
 
-    const response = await fetch(`${USERS_API_URL}/login`, {
+    const response = await fetch(`${USERS_API_URL}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "accept": "application/json",
+        },
         body: JSON.stringify({ email, password }),
     });
 
@@ -50,33 +63,36 @@ export async function login(email: string, password: string): Promise<string> {
         throw new Error(await parseErrorMessage(response));
     }
 
-    const data = (await response.json()) as AuthResponse;
+    const data = (await response.json()) as LoginResponse;
 
-    if (!data?.token) {
-        throw new Error("Login response missing token");
+    if (!data.accessToken || !data.refreshToken) {
+        throw new Error("Login response missing tokens");
     }
 
-    localStorage.setItem("jwt", data.token); // Legacy support until full switch
-    return data.token;
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
+
+    return data.accessToken;
 }
 
 /**
- * Expected backend:
- * POST {USERS_API_URL}/register
- * body: { email, password }
- * response: { token }
+ * REGISTER (CREATE USER + LOGIN)
+ * POST /api/auth/users
  */
 export async function register(email: string, password: string): Promise<string> {
     if (USE_MOCK) {
         await mockDelay(500);
-        const token = "mock-jwt-token-register-" + Date.now();
-        localStorage.setItem("jwt", token);
-        return token;
+        localStorage.setItem("accessToken", "mock-access-token");
+        localStorage.setItem("refreshToken", "mock-refresh-token");
+        return "mock-access-token";
     }
 
-    const response = await fetch(`${USERS_API_URL}/register`, {
+    const response = await fetch(`${USERS_API_URL}/auth/users`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+            "Content-Type": "application/json",
+            "accept": "application/json",
+        },
         body: JSON.stringify({ email, password }),
     });
 
@@ -84,59 +100,68 @@ export async function register(email: string, password: string): Promise<string>
         throw new Error(await parseErrorMessage(response));
     }
 
-    const data = (await response.json()) as AuthResponse;
-
-    if (!data?.token) {
-        throw new Error("Register response missing token");
-    }
-
-    localStorage.setItem("jwt", data.token);
-    return data.token;
+    // Backend does NOT return tokens → login immediately
+    return await login(email, password);
 }
 
 /**
- * Password reset step 1: request reset email
+ * LOGOUT
+ * POST /api/auth/logout
  */
-export async function requestPasswordReset(email: string): Promise<void> {
-    if (USE_MOCK) {
-        await mockDelay(500);
+export async function logout(): Promise<void> {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+        localStorage.clear();
         return;
     }
 
-    const response = await fetch(`${USERS_API_URL}/password-reset/request`, {
+    if (USE_MOCK) {
+        localStorage.clear();
+        return;
+    }
+
+    await fetch(`${USERS_API_URL}/auth/logout`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        headers: {
+            "Content-Type": "application/json",
+            "accept": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
     });
 
-    if (!response.ok) {
-        throw new Error(await parseErrorMessage(response));
-    }
+    localStorage.clear();
 }
 
 /**
- * Password reset step 2: confirm reset using token + new password
+ * REFRESH ACCESS TOKEN
+ * POST /api/auth/refresh
  */
-export async function resetPassword(
-    token: string,
-    newPassword: string
-): Promise<void> {
-    if (USE_MOCK) {
-        await mockDelay(500);
-        return;
+export async function refreshAccessToken(): Promise<string> {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+        throw new Error("No refresh token available");
     }
 
-    const response = await fetch(`${USERS_API_URL}/password-reset/confirm`, {
+    const response = await fetch(`${USERS_API_URL}/auth/refresh`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, newPassword }),
+        headers: {
+            "Content-Type": "application/json",
+            "accept": "application/json",
+        },
+        body: JSON.stringify({ refreshToken }),
     });
 
     if (!response.ok) {
+        localStorage.clear();
         throw new Error(await parseErrorMessage(response));
     }
-}
 
-export function logout() {
-    localStorage.removeItem("jwt");
+    const data = (await response.json()) as LoginResponse;
+
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
+
+    return data.accessToken;
 }
