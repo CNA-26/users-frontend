@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+/*import React, { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { resetPassword } from "../api/auth";
 
@@ -98,4 +98,4 @@ export default function ResetPasswordView() {
       )}
     </div>
   );
-}
+} */
