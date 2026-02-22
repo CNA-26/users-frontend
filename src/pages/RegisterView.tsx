@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { register as apiRegister } from "../api/auth";
 import { useAuth, User } from "../context/AuthContext";
@@ -20,6 +20,7 @@ function parseJwt(token: string): any {
 }
 
 export default function RegisterView() {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,6 +29,8 @@ export default function RegisterView() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => { document.title = "Monstera - Register"; }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +48,7 @@ export default function RegisterView() {
 
     setIsSubmitting(true);
     try {
-      const accessToken = await apiRegister(email, password); // string token
+      const accessToken = await apiRegister(email, password, name); // string token
 
       // Decode JWT to extract user info
       const payload = parseJwt(accessToken);
@@ -72,6 +75,20 @@ export default function RegisterView() {
     <div className="max-w-md mx-auto mt-10 bg-white/60 backdrop-blur-lg p-8 rounded-3xl shadow-xl border border-white/40">
       <h2 className="text-3xl font-branding text-monstera-dark mb-6 text-center">Skapa konto</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-bold text-monstera-green mb-1">Namn</label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            autoComplete="name"
+            className="w-full px-4 py-3 rounded-xl bg-white/80 border border-monstera-green/20 focus:outline-none focus:ring-2 focus:ring-monstera-medium transition-all"
+            placeholder="Förnamn Efternamn"
+          />
+        </div>
+
         <div>
           <label htmlFor="email" className="block text-sm font-bold text-monstera-green mb-1">Email</label>
           <input

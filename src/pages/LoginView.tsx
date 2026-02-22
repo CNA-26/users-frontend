@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../api/auth";
 import { useAuth, User } from "../context/AuthContext";
@@ -25,6 +25,8 @@ export default function LoginView() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  useEffect(() => { document.title = "Monstera - Login"; }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,6 +1,11 @@
 import { USERS_API_URL } from "../config/api";
 
 export type LoginResponse = {
+    token: string;
+    user: object;
+};
+
+export type RefreshResponse = {
     accessToken: string;
     refreshToken: string;
 };
@@ -50,10 +55,9 @@ export async function login(email: string, password: string): Promise<string> {
 
     const data = (await response.json()) as LoginResponse;
 
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
+    localStorage.setItem("accessToken", data.token);
 
-    return data.accessToken;
+    return data.token;
 }
 
 /**
@@ -61,14 +65,14 @@ export async function login(email: string, password: string): Promise<string> {
  * POST /api/auth/users
  * (Create user → login)
  */
-export async function register(email: string, password: string): Promise<string> {
+export async function register(email: string, password: string, name: string): Promise<string> {
     const response = await fetch(`${USERS_API_URL}/auth/users`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             accept: "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, name }),
     });
 
     if (!response.ok) {
@@ -124,7 +128,7 @@ export async function refreshAccessToken(): Promise<string> {
         throw new Error(await parseErrorMessage(response));
     }
 
-    const data = (await response.json()) as LoginResponse;
+    const data = (await response.json()) as RefreshResponse;
 
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
@@ -133,17 +137,39 @@ export async function refreshAccessToken(): Promise<string> {
 }
 
 /**
- * REQUEST PASSWORD RESET
- * POST /api/auth/users/resetPassword
+ * REQUEST PASSWORD RESET (Step 1: send email)
+ * POST /api/auth/users/requestPasswordReset
  */
 export async function requestPasswordReset(email: string): Promise<void> {
-    const response = await fetch(`${USERS_API_URL}/auth/users/resetPassword`, {
+    const response = await fetch(`${USERS_API_URL}/auth/users/requestPasswordReset`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             accept: "application/json",
         },
         body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+        throw new Error(await parseErrorMessage(response));
+    }
+}
+
+/**
+ * RESET PASSWORD (Step 2: use token from email link)
+ * POST /api/auth/users/resetPassword
+ */
+export async function resetPassword(
+    passwordResetToken: string,
+    newPassword: string
+): Promise<void> {
+    const response = await fetch(`${USERS_API_URL}/auth/users/resetPassword`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            accept: "application/json",
+        },
+        body: JSON.stringify({ passwordResetToken, newPassword }),
     });
 
     if (!response.ok) {

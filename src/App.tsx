@@ -5,7 +5,8 @@ import LoginView from "./pages/LoginView";
 import RegisterView from "./pages/RegisterView";
 import PreviousOrders from "./pages/PreviousOrders";
 import ForgotPasswordView from "./pages/ForgotPasswordView";
-import ResetPasswordView from "./pages/ChangePasswordView";
+import ResetPasswordView from "./pages/ResetPasswordView";
+import ChangePasswordView from "./pages/ChangePasswordView";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import Layout from "./components/Layout";
 
@@ -19,6 +20,12 @@ function AppRoutes() {
         <Route path="/register" element={<RegisterView />} />
         <Route path="/forgot-password" element={<ForgotPasswordView />} />
         <Route path="/reset-password" element={<ResetPasswordView />} />
+        <Route
+          path="/change-password"
+          element={
+            isAuthenticated ? <ChangePasswordView /> : <Navigate to="/login" replace />
+          }
+        />
 
         <Route
           path="/orders"

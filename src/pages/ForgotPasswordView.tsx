@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { requestPasswordReset } from "../api/auth";
 
@@ -6,6 +6,8 @@ export default function ForgotPasswordView() {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "done">("idle");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => { document.title = "Monstera - Password reset"; }, []);
 
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,8 +17,8 @@ export default function ForgotPasswordView() {
     try {
       await requestPasswordReset(email);
       setStatus("done");
-    } catch {
-      setError("Något gick fel. Försök igen.");
+    } catch (err: any) {
+      setError(err?.message || "Något gick fel. Försök igen.");
       setStatus("idle");
     }
   };

@@ -8,6 +8,7 @@ export default function PreviousOrders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => { document.title = "Monstera - Previous orders"; }, []);
   useEffect(() => {
     fetchOrders()
       .then(setOrders)
