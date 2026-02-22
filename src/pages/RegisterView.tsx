@@ -3,21 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { register as apiRegister } from "../api/auth";
 import { useAuth, User } from "../context/AuthContext";
 
-// Helper to decode JWT payload
-function parseJwt(token: string): any {
-  try {
-    const base64 = token.split(".")[1];
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
-  } catch {
-    return null;
-  }
-}
 
 export default function RegisterView() {
   const [name, setName] = useState("");
@@ -48,20 +33,8 @@ export default function RegisterView() {
 
     setIsSubmitting(true);
     try {
-      const accessToken = await apiRegister(email, password, name); // string token
-
-      // Decode JWT to extract user info
-      const payload = parseJwt(accessToken);
-      if (!payload || !payload.sub || !payload.email) {
-        throw new Error("Kunde inte läsa användarinfo från token");
-      }
-
-      const user: User = {
-        id: payload.sub,
-        email: payload.email,
-      };
-
-      login(accessToken, user); // ✅ context expects token + user
+      const response = await apiRegister(email, password, name);
+      login(response.token, response.user);
       navigate("/");
     } catch (err: any) {
       const message = err instanceof Error ? err.message : "Kunde inte skapa konto";

@@ -2,7 +2,11 @@ import { USERS_API_URL } from "../config/api";
 
 export type LoginResponse = {
     token: string;
-    user: object;
+    user: {
+        id: string;
+        email: string;
+        name?: string;
+    };
 };
 
 export type RefreshResponse = {
@@ -39,7 +43,7 @@ async function parseErrorMessage(response: Response): Promise<string> {
  * LOGIN
  * POST /api/auth/login
  */
-export async function login(email: string, password: string): Promise<string> {
+export async function login(email: string, password: string): Promise<LoginResponse> {
     const response = await fetch(`${USERS_API_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -57,7 +61,7 @@ export async function login(email: string, password: string): Promise<string> {
 
     localStorage.setItem("accessToken", data.token);
 
-    return data.token;
+    return data;
 }
 
 /**
@@ -65,7 +69,7 @@ export async function login(email: string, password: string): Promise<string> {
  * POST /api/auth/users
  * (Create user → login)
  */
-export async function register(email: string, password: string, name: string): Promise<string> {
+export async function register(email: string, password: string, name: string): Promise<LoginResponse> {
     const response = await fetch(`${USERS_API_URL}/auth/users`, {
         method: "POST",
         headers: {
