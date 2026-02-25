@@ -3,6 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { register as apiRegister } from "../api/auth";
 import { useAuth, User } from "../context/AuthContext";
 
+function parseJwt(token: string): any {
+  try {
+    const base64 = token.split(".")[1];
+    const jsonPayload = decodeURIComponent(
+      atob(base64).split("").map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch { return null; }
+}
 
 export default function RegisterView() {
   const [name, setName] = useState("");
@@ -34,7 +43,12 @@ export default function RegisterView() {
     setIsSubmitting(true);
     try {
       const response = await apiRegister(email, password, name);
-      login(response.token, response.user);
+      const payload = parseJwt(response.accessToken);
+      const user: User = {
+        id: payload?.sub ?? payload?.id ?? email,
+        email: payload?.email ?? email,
+      };
+      login(response.accessToken, user);
       navigate("/");
     } catch (err: any) {
       const message = err instanceof Error ? err.message : "Kunde inte skapa konto";

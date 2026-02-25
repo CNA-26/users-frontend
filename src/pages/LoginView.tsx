@@ -3,6 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { login as apiLogin } from "../api/auth";
 import { useAuth, User } from "../context/AuthContext";
 
+function parseJwt(token: string): any {
+  try {
+    const base64 = token.split(".")[1];
+    const jsonPayload = decodeURIComponent(
+      atob(base64).split("").map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)).join("")
+    );
+    return JSON.parse(jsonPayload);
+  } catch { return null; }
+}
 
 export default function LoginView() {
   const [email, setEmail] = useState("");
@@ -19,7 +28,13 @@ export default function LoginView() {
 
     try {
       const response = await apiLogin(email, password);
-      login(response.token, response.user);
+      const payload = parseJwt(response.accessToken);
+      // Fall back to form email if JWT payload doesn't have expected fields
+      const user: User = {
+        id: payload?.sub ?? payload?.id ?? email,
+        email: payload?.email ?? email,
+      };
+      login(response.accessToken, user);
       navigate("/");
     } catch (err: any) {
       setError("Fel email eller lösenord");

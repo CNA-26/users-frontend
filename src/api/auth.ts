@@ -1,15 +1,6 @@
 import { USERS_API_URL } from "../config/api";
 
 export type LoginResponse = {
-    token: string;
-    user: {
-        id: string;
-        email: string;
-        name?: string;
-    };
-};
-
-export type RefreshResponse = {
     accessToken: string;
     refreshToken: string;
 };
@@ -59,7 +50,8 @@ export async function login(email: string, password: string): Promise<LoginRespo
 
     const data = (await response.json()) as LoginResponse;
 
-    localStorage.setItem("accessToken", data.token);
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
 
     return data;
 }
@@ -132,7 +124,7 @@ export async function refreshAccessToken(): Promise<string> {
         throw new Error(await parseErrorMessage(response));
     }
 
-    const data = (await response.json()) as RefreshResponse;
+    const data = (await response.json()) as LoginResponse;
 
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);

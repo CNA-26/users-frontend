@@ -10,7 +10,7 @@ export default function Layout() {
             <header className="bg-white/80 backdrop-blur-md border-b border-monstera-green/20 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
                     <Link to="/" className="hover:opacity-80 transition-opacity">
-                        <h1 className="font-branding text-4xl text-monstera-dark">Monstera</h1>
+                        <h1 className="font-branding text-4xl text-monstera-dark">MONSTERA</h1>
                     </Link>
 
                     <nav className="flex items-center gap-6">
