@@ -68,6 +68,14 @@ export default function LoginView() {
         <p className="text-center text-sm pt-2">
           <Link to="/forgot-password" className="text-monstera-medium hover:text-monstera-dark font-semibold underline decoration-2 underline-offset-2">Glömt lösenord?</Link>
         </p>
+        <p className="text-center text-sm pt-1">
+          <a
+            href="https://admin-frontend-cna26-admin-frontend.2.rahtiapp.fi/login"
+            className="text-monstera-medium hover:text-monstera-dark font-semibold underline decoration-2 underline-offset-2"
+          >
+            Är du admin?
+          </a>
+        </p>
       </form>
     </div>
   );
