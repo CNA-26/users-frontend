@@ -25,17 +25,12 @@ export default function Layout() {
                         {isAuthenticated ? (
                             <>
                                 <div className="flex items-center gap-4">
-                                    <Link
-                                        to="/orders"
-                                        className="text-monstera-dark hover:text-monstera-medium font-semibold transition-colors"
-                                    >
-                                        My Orders
-                                    </Link>
+
 
                                     <a
                                         href="https://store-frontend-git-store-frontend.2.rahtiapp.fi/"
                                         onClick={handleBackToShop}
-                                        className="text-sm text-monstera-green hover:text-monstera-dark font-semibold transition-colors"
+                                        className="px-5 py-2 bg-monstera-green text-white font-bold rounded-xl hover:bg-monstera-dark hover:scale-105 transition-all shadow-md shadow-monstera-green/20"
                                     >
                                         Back to shop
                                     </a>
