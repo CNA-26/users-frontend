@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { register as apiRegister } from "../api/auth";
 import { useAuth, User } from "../context/AuthContext";
+import { buildAuthenticatedStoreUrl } from "../utils/storeFrontendUtils";
 
 function parseJwt(token: string): any {
   try {
@@ -23,6 +24,7 @@ export default function RegisterView() {
 
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   useEffect(() => { document.title = "Monstera - Register"; }, []);
 
@@ -49,7 +51,16 @@ export default function RegisterView() {
         email: payload?.email ?? email,
       };
       login(response.accessToken, user);
-      navigate("/");
+
+      // Check if we have a returnTo parameter
+      const returnTo = searchParams.get("returnTo");
+      if (returnTo) {
+        // Redirect to the returnTo URL with auth tokens
+        window.location.href = buildAuthenticatedStoreUrl(returnTo);
+      } else {
+        // Default behavior: redirect to store-frontend profile
+        window.location.href = buildAuthenticatedStoreUrl("/");
+      }
     } catch (err: any) {
       const message = err instanceof Error ? err.message : "Kunde inte skapa konto";
       setError(message);

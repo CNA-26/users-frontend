@@ -1,9 +1,15 @@
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { buildAuthenticatedStoreUrl } from "../utils/storeFrontendUtils";
 
 export default function Layout() {
     const { isAuthenticated, logout } = useAuth();
+
+    const handleBackToShop = (e: React.MouseEvent) => {
+        e.preventDefault();
+        window.location.href = buildAuthenticatedStoreUrl("/");
+    };
 
     return (
         <div className="min-h-screen flex flex-col">
@@ -28,6 +34,7 @@ export default function Layout() {
 
                                     <a
                                         href="https://store-frontend-git-store-frontend.2.rahtiapp.fi/"
+                                        onClick={handleBackToShop}
                                         className="text-sm text-monstera-green hover:text-monstera-dark font-semibold transition-colors"
                                     >
                                         Back to shop
